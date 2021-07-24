@@ -1,0 +1,23 @@
+name: Update RSS
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+
+  update:
+    runs-on: ubuntu-latest
+    env:
+      WORD_ID: '0000846'
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./rss.sh $WORD_ID > $WORD_ID.rss
+      - run: |
+          git add $WORD_ID.rss
+          if ! git diff-index --quiet HEAD; then
+            git config --local user.name "github-actions[bot]"
+            git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -a -m "Update RSS"
+            git push
+          fi
